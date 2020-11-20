@@ -1,0 +1,52 @@
+
+
+#gUMArea {
+    text-align: center;
+}
+
+li{
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-self: start;
+    align-items: center;
+}
+
+body{
+    width: 90%;
+    max-width: 960px;
+    margin: 0px auto;
+}
+
+button{
+    margin: 10px 5px;
+}
+
+audio, video {
+    margin-bottom: 20px;
+}
+
+.control {
+    text-align: center;
+}
+
+#btns{
+    display: none;
+    text-align: center;
+}
+
+.list-unstyled {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h1{ 
+    margin: 100px 0 30px;
+    text-align: center;
+}
+
+p{
+    text-align: center;
+}
