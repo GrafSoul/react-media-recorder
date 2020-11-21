@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Media Recorder",
+  "name": "A simple video and audio recording application with the ability to save and download the recording",
   "icons": [
     {
       "src": "favicon.ico",
