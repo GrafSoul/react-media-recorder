@@ -1,11 +1,13 @@
 # Media Recorder | React.js and HTML5 Video and Audio API
 A simple video and audio recording application with the ability to save and download the recording
 
+## Under development! Do not use!
+
 ## Run for start development version
 
 ```
-git clone https://github.com/GrafSoul/react-voice-recorder.git
-cd react-voice-recorder
+git clone https://github.com/GrafSoul/react-media-recorder.git
+cd react-media-recorder
 npm install
 npm start
 // or
@@ -23,4 +25,4 @@ yarn build
 
 &#169; 2020 | Media Recorder | [MIT licensed].
 
-[mit licensed]: https://github.com/GrafSoul/react-voice-recorder/blob/master/LICENSE
+[mit licensed]: https://github.com/GrafSoul/react-media-recorder/blob/master/LICENSE
