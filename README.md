@@ -1,5 +1,5 @@
-# Voice Recorder | React.js and HTML5 Audio API
-A simple voice recording application (voice recorder) with the ability to save and download the recording
+# Media Recorder | React.js and HTML5 Video and Audio API
+A simple video and audio recording application with the ability to save and download the recording
 
 ## Run for start development version
 
@@ -21,6 +21,6 @@ npm build
 yarn build
 ```
 
-&#169; 2020 | Voice Recorder | [MIT licensed].
+&#169; 2020 | Media Recorder | [MIT licensed].
 
 [mit licensed]: https://github.com/GrafSoul/react-voice-recorder/blob/master/LICENSE
