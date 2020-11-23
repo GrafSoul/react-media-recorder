@@ -1,11 +1,7 @@
 import MediaRecorder from './MediaRecorder/MediaRecorder';
 
 function App() {
-    return (
-        <div>
-            <MediaRecorder />
-        </div>
-    );
+    return <MediaRecorder />;
 }
 
 export default App;

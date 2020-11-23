@@ -28,7 +28,9 @@ gUMbtn.onclick = (e) => {
                 gUM: { audio: true },
             },
         };
+        
     media = mv.checked ? mediaOptions.video : mediaOptions.audio;
+
     navigator.mediaDevices
         .getUserMedia(media.gUM)
         .then((_stream) => {
