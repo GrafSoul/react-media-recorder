@@ -12,8 +12,11 @@ const MediaRecorder = () => {
     const audioOutputSelect = useRef();
     const videoSelect = useRef();
     const constraints = useRef();
+    const recorder = useRef(null);
+    const chunks = useRef([]);
     const [onlyAudio, setOnlyAudio] = useState(false);
     const [isVideo, setIsVideo] = useState(true);
+    const [isRecord, setIsRecord] = useState(false);
 
     useEffect(() => {
         const selectors = [
@@ -155,8 +158,26 @@ const MediaRecorder = () => {
 
     function gotStream(stream) {
         videoElement.current.srcObject = stream;
+        recorder.current = new window.MediaRecorder(stream);
+        recorder.current.ondataavailable = (e) => {
+            chunks.current.push(e.data);
+            if (recorder.current.state == 'inactive') makeLink();
+        };
         return navigator.mediaDevices.enumerateDevices();
     }
+
+    const makeLink = () => {};
+
+    const handleRecordStream = () => {
+        setIsRecord(true);
+        chunks.current = [];
+        recorder.current.start();
+    };
+
+    const handleRecordStop = () => {
+        setIsRecord(false);
+        recorder.current.stop();
+    };
 
     const handleOnlyAudio = () => {
         setIsVideo(false);
@@ -244,6 +265,27 @@ const MediaRecorder = () => {
                             id="audioOutput"
                             ref={audioOutputSelect}
                         ></select>
+                    </div>
+
+                    <div className="record-btns">
+                        <button
+                            disabled={isRecord ? true : false}
+                            className={[
+                                'btn',
+                                'btn-success',
+                                isRecord ? 'active' : null,
+                            ].join(' ')}
+                            onClick={handleRecordStream}
+                        >
+                            Record
+                        </button>
+                        <button
+                            disabled={isRecord ? false : true}
+                            className="btn btn-info"
+                            onClick={handleRecordStop}
+                        >
+                            Stop
+                        </button>
                     </div>
                 </div>
             </div>
