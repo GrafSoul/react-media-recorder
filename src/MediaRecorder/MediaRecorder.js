@@ -178,6 +178,33 @@ const MediaRecorder = () => {
                 </h2>
             </div>
 
+            {isVideo && (
+                <>
+                    <div className="select-title">Selecting a record type</div>
+
+                    <div
+                        className="control"
+                        onChange={(e) => handleSetOnlyAudio(e)}
+                    >
+                        <input
+                            type="radio"
+                            name="media"
+                            value="video"
+                            id="mediaVideo"
+                            defaultChecked={!onlyAudio}
+                        />
+                        <label htmlFor="media">Video</label>
+                        <input
+                            type="radio"
+                            name="media"
+                            value="audio"
+                            defaultChecked={onlyAudio}
+                        />
+                        <label htmlFor="media">Audio</label>
+                    </div>
+                </>
+            )}
+
             <div className="settings">
                 <div
                     className={[
@@ -202,34 +229,6 @@ const MediaRecorder = () => {
                 </div>
 
                 <div className="audio-settings">
-                    {isVideo && (
-                        <>
-                            <div className="select-title">
-                                Selecting a record type
-                            </div>
-
-                            <div
-                                className="control"
-                                onChange={(e) => handleSetOnlyAudio(e)}
-                            >
-                                <input
-                                    type="radio"
-                                    name="media"
-                                    value="video"
-                                    id="mediaVideo"
-                                    defaultChecked={!onlyAudio}
-                                />
-                                <label htmlFor="media">Video</label>
-                                <input
-                                    type="radio"
-                                    name="media"
-                                    value="audio"
-                                    defaultChecked={onlyAudio}
-                                />
-                                <label htmlFor="media">Audio</label>
-                            </div>
-                        </>
-                    )}
                     <div className="select">
                         <label htmlFor="audioSource">Audio input:</label>
                         <AudioMeter />

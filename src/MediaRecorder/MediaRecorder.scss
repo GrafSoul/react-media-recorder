@@ -70,11 +70,13 @@ label {
     line-height: 1.2em;
     color: rgb(255, 255, 255);
     font-weight: 700;
+    text-align: center;
     margin-bottom: 10px;
 }
 
 .control {
     margin-bottom: 20px;
+    text-align: center;
     input {
         cursor: pointer;
     }
