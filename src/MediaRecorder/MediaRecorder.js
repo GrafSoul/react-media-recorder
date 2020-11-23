@@ -236,7 +236,7 @@ const MediaRecorder = () => {
                     <div className="video-content">
                         <video
                             id="video"
-                            poster="images/poster.jpg"
+                            poster="images/poster.png"
                             autoPlay
                             playsInline
                             ref={videoElement}
