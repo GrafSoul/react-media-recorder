@@ -1,7 +1,7 @@
 .container {
     margin-top: 50px;
     padding-bottom: 20px;
-    border-bottom: 1px solid rgb(83, 172, 142);
+
 
     .header-content {
         margin-bottom: 30px;
@@ -21,6 +21,19 @@
         font-size: 1.2em;
         text-align: center;
     }
+
+    .footer-content {
+        border-top: 1px solid rgb(83, 172, 142);
+        border-bottom: 1px solid rgb(83, 172, 142);
+        color: rgb(255, 255, 255);
+
+        h2 {
+            margin-top: 20px;
+            color: rgb(255, 255, 255);
+            font-size: 1.2em;
+            text-align: center;
+        }
+    }
 }
 
 .settings {
@@ -32,6 +45,10 @@
 
 .video-settings, .audio-settings{
     margin: 0 20px;
+}
+
+.audio-settings {
+    margin-bottom: 30px;
 }
 
 .invisible {
@@ -124,18 +141,27 @@ label {
 
 .record-btns {
     text-align: center;
+
     button {
         margin: 0 5px;
     }
+
     .active{
         background-color:rgb(161, 0, 0);
         border-color: rgba(161, 0, 0, 1);
         animation:blinking 1s infinite;
     }
+
     @keyframes blinking{
         0%{opacity: 1;}
         50%{opacity: .3;}
         100%{opacity: 1;}
     }
     
+}
+
+.list-media {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }

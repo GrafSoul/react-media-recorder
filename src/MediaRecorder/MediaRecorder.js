@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import adapter from 'webrtc-adapter';
 
 import AudioMeter from './AudioMeter/AudioMeter';
+import ListRecords from './ListRecords/ListRecords';
 
 import './MediaRecorder.scss';
 
@@ -14,6 +15,8 @@ const MediaRecorder = () => {
     const constraints = useRef();
     const recorder = useRef(null);
     const chunks = useRef([]);
+    const listItems = useRef([]);
+
     const [onlyAudio, setOnlyAudio] = useState(false);
     const [isVideo, setIsVideo] = useState(true);
     const [isRecord, setIsRecord] = useState(false);
@@ -91,10 +94,6 @@ const MediaRecorder = () => {
             constraints.current = {
                 audio: {
                     deviceId: audioSource ? { exact: audioSource } : undefined,
-                    tag: 'audio',
-                    type: 'audio/mp3',
-                    ext: '.mp3',
-                    gUM: { audio: true },
                 },
                 video: onlyAudio
                     ? false
@@ -102,10 +101,6 @@ const MediaRecorder = () => {
                           deviceId: videoSource
                               ? { exact: videoSource }
                               : undefined,
-                          tag: 'video',
-                          type: 'video/webm',
-                          ext: '.mp4',
-                          gUM: { video: true, audio: true },
                       },
             };
 
@@ -160,23 +155,24 @@ const MediaRecorder = () => {
         videoElement.current.srcObject = stream;
         recorder.current = new window.MediaRecorder(stream);
         recorder.current.ondataavailable = (e) => {
+            chunks.current = [];
             chunks.current.push(e.data);
-            if (recorder.current.state == 'inactive') makeLink();
+            if (recorder.current.state === 'inactive') recordToList();
         };
+
         return navigator.mediaDevices.enumerateDevices();
     }
 
-    const makeLink = () => {};
-
     const handleRecordStream = () => {
-        setIsRecord(true);
-        chunks.current = [];
         recorder.current.start();
+        setIsRecord(true);
+        console.log(recorder.current.state);
     };
 
-    const handleRecordStop = () => {
-        setIsRecord(false);
+    const handleRecordStop = async () => {
         recorder.current.stop();
+        setIsRecord(false);
+        console.log(recorder.current.state);
     };
 
     const handleOnlyAudio = () => {
@@ -187,6 +183,26 @@ const MediaRecorder = () => {
     const handleSetOnlyAudio = (e) => {
         console.log(e.target.value);
         e.target.value === 'audio' ? setOnlyAudio(true) : setOnlyAudio(false);
+    };
+
+    const recordToList = () => {
+        let blob = new Blob(chunks.current, {
+            type: isVideo ? 'video' : 'audio',
+        });
+        let url = URL.createObjectURL(blob);
+        let currentRecord = isVideo ? (
+            <video controls>
+                <source src={url} type="video/webm" />
+            </video>
+        ) : (
+            <audio controls>
+                <source src={url} type="audio/mp3" />
+            </audio>
+        );
+
+        let currentList = listItems.current;
+        currentList.push(currentRecord);
+        listItems.current = currentList;
     };
 
     return (
@@ -288,6 +304,11 @@ const MediaRecorder = () => {
                         </button>
                     </div>
                 </div>
+            </div>
+
+            <div className="footer-content">
+                <h2>List of media records</h2>
+                <ListRecords list={listItems.current} />
             </div>
         </div>
     );
