@@ -15,11 +15,14 @@ const MediaRecorder = () => {
     const constraints = useRef();
     const recorder = useRef(null);
     const chunks = useRef([]);
-    const listItems = useRef([]);
+    // const listItems = useRef([]);
 
+    const [listItems, setListItems] = useState([]);
     const [onlyAudio, setOnlyAudio] = useState(false);
     const [isVideo, setIsVideo] = useState(true);
     const [isRecord, setIsRecord] = useState(false);
+    const [isStart, setIsStart] = useState(false);
+    const [count, setCount] = useState(0);
 
     useEffect(() => {
         const selectors = [
@@ -31,7 +34,7 @@ const MediaRecorder = () => {
             'sinkId' in HTMLMediaElement.prototype
         );
 
-        function gotDevices(deviceInfos) {
+        const gotDevices = (deviceInfos) => {
             const values = selectors.map((select) => select.value);
             selectors.forEach((select) => {
                 while (select.firstChild) {
@@ -75,19 +78,28 @@ const MediaRecorder = () => {
                     select.value = values[selectorIndex];
                 }
             });
-        }
+        };
+
+        const handleError = (error) => {
+            handlerOnlyAudio();
+            console.log(
+                'navigator.MediaDevices.getUserMedia error: ',
+                error.message,
+                error.name,
+            );
+        };
 
         navigator.mediaDevices
             .enumerateDevices()
             .then(gotDevices)
             .catch(handleError);
 
-        function changeAudioDestination() {
+        const changeAudioDestination = () => {
             const audioDestination = audioOutputSelect.current.value;
             attachSinkId(videoElement.current, audioDestination);
-        }
+        };
 
-        function start() {
+        const start = () => {
             const audioSource = audioInputSelect.current.value;
             const videoSource = videoSelect.current.value;
 
@@ -109,7 +121,7 @@ const MediaRecorder = () => {
                 .then(gotStream)
                 .then(gotDevices)
                 .catch(handleError);
-        }
+        };
 
         audioInputSelect.current.onchange = start;
         audioOutputSelect.current.onchange = changeAudioDestination;
@@ -117,18 +129,9 @@ const MediaRecorder = () => {
         videoSelect.current.onchange = start;
 
         start();
-
-        function handleError(error) {
-            handleOnlyAudio();
-            console.log(
-                'navigator.MediaDevices.getUserMedia error: ',
-                error.message,
-                error.name,
-            );
-        }
     }, [onlyAudio]);
 
-    function attachSinkId(element, sinkId) {
+    const attachSinkId = (element, sinkId) => {
         if (typeof element.sinkId !== 'undefined') {
             element
                 .setSinkId(sinkId)
@@ -149,60 +152,89 @@ const MediaRecorder = () => {
         } else {
             console.warn('Browser does not support output device selection.');
         }
-    }
+    };
 
-    function gotStream(stream) {
+    const gotStream = (stream) => {
         videoElement.current.srcObject = stream;
         recorder.current = new window.MediaRecorder(stream);
+        return navigator.mediaDevices.enumerateDevices();
+    };
+
+    const recordToList = () => {
+        let blob = new Blob(chunks.current, {
+            type: onlyAudio ? 'audio' : 'video',
+        });
+        let url = URL.createObjectURL(blob);
+        let currentCount = count + 1;
+        let currentRecord = !onlyAudio ? (
+            <span key={currentCount}>
+                {currentCount}.
+                <video controls>
+                    <source src={url} type="video/webm" />
+                </video>
+                <a
+                    className="btn btn-info"
+                    href={url}
+                    download={`${currentCount}.mp4`}
+                >
+                    Download - {currentCount}.mp4
+                </a>
+            </span>
+        ) : (
+            <span key={currentCount}>
+                {currentCount}.
+                <audio controls>
+                    <source src={url} type="audio/mp3" />
+                </audio>
+                <a
+                    className="btn btn-info"
+                    href={url}
+                    download={`${currentCount}.mp3`}
+                >
+                    Download - {currentCount}.mp3
+                </a>
+            </span>
+        );
+
+        let currentList = listItems;
+        currentList.push(currentRecord);
+        setListItems(currentList);
+        setCount(count + 1);
+    };
+
+    const handlerRecordStream = () => {
+        recorder.current.start();
+        setIsRecord(true);
+    };
+
+    const handlerRecordStop = () => {
+        recorder.current.stop();
         recorder.current.ondataavailable = (e) => {
             chunks.current = [];
             chunks.current.push(e.data);
             if (recorder.current.state === 'inactive') recordToList();
         };
-
-        return navigator.mediaDevices.enumerateDevices();
-    }
-
-    const handleRecordStream = () => {
-        recorder.current.start();
-        setIsRecord(true);
-        console.log(recorder.current.state);
-    };
-
-    const handleRecordStop = async () => {
-        recorder.current.stop();
         setIsRecord(false);
-        console.log(recorder.current.state);
     };
 
-    const handleOnlyAudio = () => {
+    const handlerOnlyAudio = () => {
         setIsVideo(false);
         setOnlyAudio(true);
     };
 
-    const handleSetOnlyAudio = (e) => {
-        console.log(e.target.value);
-        e.target.value === 'audio' ? setOnlyAudio(true) : setOnlyAudio(false);
+    const handlerStartRecording = () => {
+        setIsStart(!isStart);
     };
 
-    const recordToList = () => {
-        let blob = new Blob(chunks.current, {
-            type: isVideo ? 'video' : 'audio',
-        });
-        let url = URL.createObjectURL(blob);
-        let currentRecord = isVideo ? (
-            <video controls>
-                <source src={url} type="video/webm" />
-            </video>
-        ) : (
-            <audio controls>
-                <source src={url} type="audio/mp3" />
-            </audio>
-        );
+    const handlerDeleteEntry = (index) => {
+        let newList = listItems;
+        newList.splice(index, 1);
+        setListItems(newList);
+        setCount(count - 1);
+    };
 
-        let currentList = listItems.current;
-        currentList.push(currentRecord);
-        listItems.current = currentList;
+    const handleSetOnlyAudio = (e) => {
+        e.target.value === 'audio' ? setOnlyAudio(true) : setOnlyAudio(false);
     };
 
     return (
@@ -214,101 +246,129 @@ const MediaRecorder = () => {
                     devices
                 </h2>
             </div>
+            <div
+                className={['control-wrap', !isStart ? null : 'hidden'].join(
+                    ' ',
+                )}
+            >
+                {isVideo && (
+                    <>
+                        <div className="select-title">
+                            Selecting a record type
+                        </div>
 
-            {isVideo && (
-                <>
-                    <div className="select-title">Selecting a record type</div>
+                        <div
+                            className="control"
+                            onChange={(e) => handleSetOnlyAudio(e)}
+                        >
+                            <input
+                                type="radio"
+                                name="media"
+                                value="video"
+                                id="mediaVideo"
+                                defaultChecked={!onlyAudio}
+                            />
+                            <label htmlFor="media">Video</label>
+                            <input
+                                type="radio"
+                                name="media"
+                                value="audio"
+                                defaultChecked={onlyAudio}
+                            />
+                            <label htmlFor="media">Audio</label>
+                        </div>
+                    </>
+                )}
 
+                <div className="settings">
                     <div
-                        className="control"
-                        onChange={(e) => handleSetOnlyAudio(e)}
+                        className={[
+                            'video-settings',
+                            onlyAudio ? 'invisible' : null,
+                        ].join(' ')}
                     >
-                        <input
-                            type="radio"
-                            name="media"
-                            value="video"
-                            id="mediaVideo"
-                            defaultChecked={!onlyAudio}
-                        />
-                        <label htmlFor="media">Video</label>
-                        <input
-                            type="radio"
-                            name="media"
-                            value="audio"
-                            defaultChecked={onlyAudio}
-                        />
-                        <label htmlFor="media">Audio</label>
-                    </div>
-                </>
-            )}
+                        <div className="video-content">
+                            <video
+                                id="video"
+                                poster="images/poster.png"
+                                autoPlay
+                                playsInline
+                                ref={videoElement}
+                            ></video>
+                        </div>
 
-            <div className="settings">
-                <div
-                    className={[
-                        'video-settings',
-                        onlyAudio ? 'invisible' : null,
-                    ].join(' ')}
-                >
-                    <div className="video-content">
-                        <video
-                            id="video"
-                            poster="images/poster.png"
-                            autoPlay
-                            playsInline
-                            ref={videoElement}
-                        ></video>
+                        <div className="select">
+                            <label htmlFor="videoSource">Video source:</label>
+                            <select id="videoSource" ref={videoSelect}></select>
+                        </div>
                     </div>
 
-                    <div className="select">
-                        <label htmlFor="videoSource">Video source:</label>
-                        <select id="videoSource" ref={videoSelect}></select>
-                    </div>
-                </div>
+                    <div className="audio-settings">
+                        <div className="select">
+                            <label htmlFor="audioSource">Audio input:</label>
+                            <AudioMeter />
+                            <select
+                                id="audioSource"
+                                ref={audioInputSelect}
+                            ></select>
+                        </div>
 
-                <div className="audio-settings">
-                    <div className="select">
-                        <label htmlFor="audioSource">Audio input:</label>
-                        <AudioMeter />
-                        <select
-                            id="audioSource"
-                            ref={audioInputSelect}
-                        ></select>
-                    </div>
-
-                    <div className="select">
-                        <label htmlFor="audioOutput">Audio output:</label>
-                        <select
-                            id="audioOutput"
-                            ref={audioOutputSelect}
-                        ></select>
-                    </div>
-
-                    <div className="record-btns">
-                        <button
-                            disabled={isRecord ? true : false}
-                            className={[
-                                'btn',
-                                'btn-success',
-                                isRecord ? 'active' : null,
-                            ].join(' ')}
-                            onClick={handleRecordStream}
-                        >
-                            Record
-                        </button>
-                        <button
-                            disabled={isRecord ? false : true}
-                            className="btn btn-info"
-                            onClick={handleRecordStop}
-                        >
-                            Stop
-                        </button>
+                        <div className="select">
+                            <label htmlFor="audioOutput">Audio output:</label>
+                            <select
+                                id="audioOutput"
+                                ref={audioOutputSelect}
+                            ></select>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            {isStart ? (
+                <div className="record-btns">
+                    <button
+                        disabled={isRecord ? true : false}
+                        className={[
+                            'btn',
+                            'btn-success',
+                            isRecord ? 'active' : null,
+                        ].join(' ')}
+                        onClick={handlerRecordStream}
+                    >
+                        Record
+                    </button>
+                    <button
+                        disabled={isRecord ? false : true}
+                        className="btn btn-info"
+                        onClick={handlerRecordStop}
+                    >
+                        Stop
+                    </button>
+                    <button
+                        disabled={!isRecord ? false : true}
+                        className="btn btn-info"
+                        onClick={handlerStartRecording}
+                    >
+                        Settings
+                    </button>
+                </div>
+            ) : (
+                <div className="record-btns">
+                    <button
+                        className="btn btn-info"
+                        onClick={handlerStartRecording}
+                    >
+                        Start Recording
+                    </button>
+                </div>
+            )}
+
             <div className="footer-content">
-                <h2>List of media records</h2>
-                <ListRecords list={listItems.current} />
+                <h2>List of media records ({count})</h2>
+                <ListRecords
+                    list={listItems}
+                    deleteEntry={handlerDeleteEntry}
+                />
             </div>
         </div>
     );

@@ -91,6 +91,12 @@ label {
     margin-bottom: 10px;
 }
 
+.control-wrap {
+    &.hidden {
+        display: none;
+    }
+}
+
 .control {
     margin-bottom: 20px;
     text-align: center;
@@ -140,10 +146,11 @@ label {
 }
 
 .record-btns {
+    margin-bottom: 30px;
     text-align: center;
 
     button {
-        margin: 0 5px;
+        margin: 5px;
     }
 
     .active{
@@ -164,4 +171,38 @@ label {
     margin: 0;
     padding: 0;
     list-style: none;
+
+    li {
+        margin: 0 20px 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    span {
+        margin-right: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    video {
+        width: 200px;
+        height: auto;
+        margin-left: 10px;
+        margin-right: 20px;
+    }
+
+    audio {
+        margin-left: 10px;
+        margin-right: 20px;
+        margin-bottom: 10px;
+    }
+
 }
+
+@media screen and (min-width: 900px) {
+
+}
+

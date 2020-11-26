@@ -1,7 +1,6 @@
 # Media Recorder | React.js and HTML5 Video and Audio API
-A simple video and audio recording application with the ability to save and download the recording
 
-## Under development! Do not use!
+A simple video and audio recording application with the ability to save and download the recording
 
 ## Run for start development version
 
