@@ -246,13 +246,9 @@ const MediaRecorder = () => {
                     devices
                 </h2>
             </div>
-            <div
-                className={['control-wrap', !isStart ? null : 'hidden'].join(
-                    ' ',
-                )}
-            >
+            <div className="control-wrap">
                 {isVideo && (
-                    <>
+                    <div className={isStart ? 'invisible' : null}>
                         <div className="select-title">
                             Selecting a record type
                         </div>
@@ -277,7 +273,7 @@ const MediaRecorder = () => {
                             />
                             <label htmlFor="media">Audio</label>
                         </div>
-                    </>
+                    </div>
                 )}
 
                 <div className="settings">
@@ -297,13 +293,23 @@ const MediaRecorder = () => {
                             ></video>
                         </div>
 
-                        <div className="select">
+                        <div
+                            className={[
+                                'select',
+                                isStart ? 'invisible' : null,
+                            ].join(' ')}
+                        >
                             <label htmlFor="videoSource">Video source:</label>
                             <select id="videoSource" ref={videoSelect}></select>
                         </div>
                     </div>
 
-                    <div className="audio-settings">
+                    <div
+                        className={[
+                            'audio-settings',
+                            isStart ? 'invisible' : null,
+                        ].join(' ')}
+                    >
                         <div className="select">
                             <label htmlFor="audioSource">Audio input:</label>
                             <AudioMeter />
