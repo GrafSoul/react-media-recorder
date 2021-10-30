@@ -288,6 +288,7 @@ const MediaRecorder = () => {
                                 id="video"
                                 poster="images/poster.png"
                                 autoPlay
+                                muted
                                 playsInline
                                 ref={videoElement}
                             ></video>
